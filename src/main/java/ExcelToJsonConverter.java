@@ -91,8 +91,6 @@ public class ExcelToJsonConverter {
         List<Map<String, String>> sheetData = new ArrayList<>();
         List<String> headers = new ArrayList<>();
 
-        System.out.println("📌 Lese Tabellenblatt: " + sheet.getSheetName());
-
         for (Row row : sheet) {
             if (row.getRowNum() == 0) {
                 continue;
