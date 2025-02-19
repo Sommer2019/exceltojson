@@ -121,8 +121,8 @@ public class ExcelToJsonConverter {
                 Map<String, String> rowData = new LinkedHashMap<>();
                 Map<String, String> mapping = columnMappings.get(category);
 
-                for (int i = 1; i < headers.size(); i++) {
-                    Cell cell = row.getCell(i, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                for (int i = 0; i < headers.size(); i++) {
+                    Cell cell = row.getCell(i+1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                     String originalHeader = headers.get(i);
                     if (mapping.containsKey(originalHeader)) {
                         String jsonField = mapping.get(originalHeader);
