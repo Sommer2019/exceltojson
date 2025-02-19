@@ -22,13 +22,11 @@ public class ExcelToJsonConverter {
         try (FileInputStream fis = new FileInputStream(new File(filePath));
              Workbook workbook = new XSSFWorkbook(fis)) {
 
-            // 1️⃣ Einstellungen einlesen (Header-Mapping)
             Sheet settingsSheet = workbook.getSheet(SETTINGS_SHEET);
             if (settingsSheet != null) {
                 columnMappings = loadSettingsMappings(settingsSheet);
             }
 
-            // 2️⃣ Verarbeite alle Blätter außer ausgeschlossene
             for (Sheet sheet : workbook) {
                 String sheetName = sheet.getSheetName();
 
@@ -37,11 +35,9 @@ public class ExcelToJsonConverter {
                 }
 
                 if (isB1Filled(sheet)) {
-                    System.out.println("❌ Blatt übersprungen: " + sheetName + " (B1 hat einen Wert)");
                     continue;
                 }
 
-                System.out.println("✅ Verarbeite Blatt: " + sheetName);
                 excelData.put(sheetName, readSheetWithMappings(sheet, columnMappings));
             }
 
@@ -49,7 +45,6 @@ public class ExcelToJsonConverter {
             e.printStackTrace();
         }
 
-        // 3️⃣ JSON-Dateien speichern
         saveJsonFiles(excelData, outputDir);
     }
 
@@ -100,18 +95,15 @@ public class ExcelToJsonConverter {
 
         for (Row row : sheet) {
             if (row.getRowNum() == 0) {
-                // 🚀 Erste Zeile (Index 0) ignorieren
                 continue;
             }
 
             if (row.getRowNum() == 1) {
-                // 🚀 Zeile 2 (Index 1) als Header setzen, aber erste Spalte ignorieren
                 for (int col = 1; col < row.getLastCellNum(); col++) {
                     Cell cell = row.getCell(col, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                     headers.add(cell.toString().trim());
                 }
-                System.out.println("🔹 Spaltenüberschriften gesetzt: " + headers);
-                continue; // 🚀 Erste Datenzeile als Header speichern und überspringen
+                continue;
             }
 
             Cell categoryCell = row.getCell(0, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
@@ -130,8 +122,6 @@ public class ExcelToJsonConverter {
                         rowData.put(jsonField, value);
                     }
                 }
-
-                System.out.println("📄 Zeile " + row.getRowNum() + ": " + rowData);
                 sheetData.add(rowData);
             }
         }
@@ -149,7 +139,6 @@ public class ExcelToJsonConverter {
             File outputFile = new File(outputDir, sheetName + ".json");
             try {
                 objectMapper.writeValue(outputFile, data);
-                System.out.println("💾 Gespeichert: " + outputFile.getAbsolutePath());
             } catch (IOException e) {
                 e.printStackTrace();
             }
